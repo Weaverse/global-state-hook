@@ -36,7 +36,7 @@ export function useSubscriber(subscriber: ISubscriber, pick: string[] = []): IUp
 	}
 
 	React.useEffect(() => {
-		subscriber.subscribe((d) => {
+		const updater = (d: State) => {
 			if (pick.length) {
 				if (Object.keys(d).find(k => pick.includes(k))) {
 					setUpdate(d)
@@ -44,7 +44,11 @@ export function useSubscriber(subscriber: ISubscriber, pick: string[] = []): IUp
 				return
 			}
 			setUpdate(d)
-		})
+		}
+		subscriber.subscribe(updater)
+		return () => {
+			subscriber.unsubscribe(updater)
+		}
 	}, [])
 	return { data, update }
 }
