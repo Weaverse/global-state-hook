@@ -7,7 +7,7 @@ const counterSubscription = createSubscription({ count: 0, foo: 10 })
 const textSubscription = createSubscription({ value: "The text will sync together" })
 
 const useCounter = () => {
-	let { state, setState } = useSubscription(counterSubscription, ["count"])
+	let { state, setState } = useSubscription(counterSubscription)
 	const increment = () => setState({ count: state.count + 1 })
 	const decrement = () => setState({ count: state.count + 1 })
 	return { count: state.count, increment, decrement }
@@ -27,7 +27,8 @@ function CounterDisplay() {
 function FooDisplay() {
 	// Only update when foo change
 	let { state, setState } = useSubscription(counterSubscription, ["foo"])
-	console.log("Only update when foo change", state.foo)
+
+	console.log("Only update when foo change", state)
 	return (
 		<div>
 			<button onClick={() => setState({ foo: state.foo - 1 })}>-</button>

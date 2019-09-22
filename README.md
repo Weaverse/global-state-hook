@@ -14,14 +14,14 @@
 ## Install
 
 ```sh
-npm install --save global-hook-state
+npm install --save global-state-hook
 ```
 
 ## Example
 
 ```tsx
 import React  from "react"
-import { createSubscription, useSubscription } from "global-hook-state"
+import { createSubscription, useSubscription } from "global-state-hook"
 import { render } from "react-dom"
 
 

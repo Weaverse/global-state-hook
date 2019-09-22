@@ -11,15 +11,10 @@ export interface ISubscription {
 }
 
 export function createSubscription(initialState = {}): ISubscription {
-	let state = { ...initialState }
+	const state = initialState
 	let listener: Listener[] = []
-	function subscribe(fn: Listener) {
-		listener.push(fn)
-	}
-	function unsubscribe(fn: Listener) {
-		listener = listener.filter(f => f !== fn)
-	}
-
+	const subscribe = (fn: Listener) => listener.push(fn)
+	const unsubscribe = (fn: Listener) => (listener = listener.filter(f => f !== fn))
 	return { subscribe, unsubscribe, listener, state }
 }
 
@@ -32,25 +27,16 @@ export function useSubscription(subscriber: ISubscription, pick: string[] = []):
 	const { state } = subscriber
 	const [, setUpdate] = React.useState()
 
-	function setState(newState: State) {
+	const setState = React.useCallback((newState: State) => {
 		Object.assign(state, newState)
 		subscriber.listener.forEach(fn => fn(newState))
-	}
+	}, [])
 
 	React.useEffect(() => {
-		const updater = (d: State) => {
-			if (pick.length) {
-				if (Object.keys(d).find(k => pick.includes(k))) {
-					setUpdate(d)
-				}
-				return
-			}
-			setUpdate(d)
-		}
+		const updater = (nextState: State) => (!pick.length || (Object.keys(nextState).find(k => pick.includes(k)))) && setUpdate({})
+
 		subscriber.subscribe(updater)
-		return () => {
-			subscriber.unsubscribe(updater)
-		}
+		return () => subscriber.unsubscribe(updater)
 	}, [])
 	return { state, setState }
 }
