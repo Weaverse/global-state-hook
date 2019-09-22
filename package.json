@@ -1,6 +1,6 @@
 {
 	"name": "global-hook-state",
-	"version": "1.0.5",
+	"version": "1.0.6",
 	"description": "~200kb for exactly what you need to manage global state",
 	"source": "src/index.ts",
 	"main": "dist/index.js",
@@ -19,6 +19,10 @@
 	"author": {
 		"name": "Minh Phan",
 		"email": "phanminh65@gmail.com"
+	},
+	"repository": {
+		"url": "git@github.com:paul-phan/global-hook-state.git",
+		"type": "git"
 	},
 	"license": "MIT",
 	"devDependencies": {
