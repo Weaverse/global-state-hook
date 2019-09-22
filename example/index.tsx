@@ -1,10 +1,9 @@
-import React from "react"
+import React, { useContext } from "react"
 import { createSubscription, useSubscription } from "../src/index"
 import { render } from "react-dom"
 
 
 const counterSubscription = createSubscription({ count: 0, foo: 10 })
-const textSubscription = createSubscription({ value: "The text will sync together" })
 
 const useCounter = () => {
 	let { state, setState } = useSubscription(counterSubscription)
@@ -39,6 +38,7 @@ function FooDisplay() {
 }
 
 const useTextValue = () => {
+	const textSubscription = useContext(TextContext)
 	let { state, setState } = useSubscription(textSubscription)
 	const onChange = e => setState({ value: e.target.value })
 	return { value: state.value, onChange }
@@ -51,16 +51,28 @@ function Text() {
 	</div>
 }
 
+const TextContext = React.createContext<any>(null)
+
+function TextComponent() {
+	const textSubscription = createSubscription({ value: "The text will sync together" })
+	return <TextContext.Provider value={textSubscription}>
+		<Text/>
+
+		{/*You can put the Text component anywhere*/}
+		<Text/>
+	</TextContext.Provider>
+}
+
 
 function App() {
 	return (
 		<>
 			<CounterDisplay />
 			<FooDisplay/>
-			<Text/>
 
-			{/*You can put the Text component anywhere*/}
-			<Text/>
+			<TextComponent/>
+
+
 		</>
 	)
 }
