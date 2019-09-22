@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react"
+import React from "react"
 
 type State = object
 type Listener = (data: State) => void
@@ -29,12 +29,13 @@ interface IUpdater {
 
 export function useSubscriber(subscriber: ISubscriber, pick: string[] = []): IUpdater {
 	const { data } = subscriber
-	const [, setUpdate] = useState()
+	const [, setUpdate] = React.useState()
 	function update(newData: State) {
 		Object.assign(data, newData)
 		subscriber.listener.forEach(fn => fn(newData))
 	}
-	useEffect(() => {
+
+	React.useEffect(() => {
 		subscriber.subscribe((d) => {
 			if (pick.length) {
 				if (Object.keys(d).find(k => pick.includes(k))) {
