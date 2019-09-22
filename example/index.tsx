@@ -1,9 +1,10 @@
-import React  from "react"
+import React from "react"
 import { createSubscriber, useSubscriber } from "../src/index"
 import { render } from "react-dom"
 
 
 const counterSubscriber = createSubscriber({count: 0, foo: 10})
+const textSubscriber = createSubscriber({ value: "The text will sync together" })
 
 function CounterDisplay() {
 	let {data, update} = useSubscriber(counterSubscriber)
@@ -28,11 +29,23 @@ function FooDisplay() {
 	)
 }
 
+function Text() {
+	let { data, update } = useSubscriber(textSubscriber)
+	return <div>
+		<input value={data.value} onChange={e => update({ value: e.target.value })}/>
+	</div>
+}
+
+
 function App() {
 	return (
 		<>
 			<CounterDisplay />
 			<FooDisplay/>
+			<Text/>
+
+			{/*You can put the Text component anywhere*/}
+			<Text/>
 		</>
 	)
 }

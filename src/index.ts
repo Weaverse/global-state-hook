@@ -10,8 +10,8 @@ interface ISubscriber {
 	data: object | any
 }
 
-export function createSubscriber(initialData = {}): ISubscriber {
-	let data = { ...initialData }
+export function createSubscriber(initialState = {}): ISubscriber {
+	let data = { ...initialState }
 	let listener: Listener[] = []
 	function subscribe(fn: Listener) {
 		listener.push(fn)

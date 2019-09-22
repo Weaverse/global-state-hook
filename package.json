@@ -1,6 +1,6 @@
 {
 	"name": "global-hook-state",
-	"version": "1.0.1",
+	"version": "1.0.2",
 	"description": "~200kb for exactly what you need to manage global state",
 	"source": "src/index.ts",
 	"main": "dist/index.js",
