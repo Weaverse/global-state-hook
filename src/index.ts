@@ -1,17 +1,17 @@
 import React from "react"
 
-type State = object
-type Listener = (data: State) => void
+type State = object | any
+type Listener = (newState: State) => void
 
-interface ISubscriber {
+export interface ISubscription {
 	subscribe: (fn: Listener) => void,
 	unsubscribe: (fn: Listener) => void,
 	listener: Listener[],
-	data: object | any
+	state: State
 }
 
-export function createSubscriber(initialState = {}): ISubscriber {
-	let data = { ...initialState }
+export function createSubscription(initialState = {}): ISubscription {
+	let state = { ...initialState }
 	let listener: Listener[] = []
 	function subscribe(fn: Listener) {
 		listener.push(fn)
@@ -19,20 +19,22 @@ export function createSubscriber(initialState = {}): ISubscriber {
 	function unsubscribe(fn: Listener) {
 		listener = listener.filter(f => f !== fn)
 	}
-	return { subscribe, unsubscribe, listener, data }
+
+	return { subscribe, unsubscribe, listener, state }
 }
 
-interface IUpdater {
-	update: (newData: State) => void
-	data: object | any
+export interface IStateUpdater {
+	setState: (newState: State) => void
+	state: State
 }
 
-export function useSubscriber(subscriber: ISubscriber, pick: string[] = []): IUpdater {
-	const { data } = subscriber
+export function useSubscription(subscriber: ISubscription, pick: string[] = []): IStateUpdater {
+	const { state } = subscriber
 	const [, setUpdate] = React.useState()
-	function update(newData: State) {
-		Object.assign(data, newData)
-		subscriber.listener.forEach(fn => fn(newData))
+
+	function setState(newState: State) {
+		Object.assign(state, newState)
+		subscriber.listener.forEach(fn => fn(newState))
 	}
 
 	React.useEffect(() => {
@@ -50,5 +52,5 @@ export function useSubscriber(subscriber: ISubscriber, pick: string[] = []): IUp
 			subscriber.unsubscribe(updater)
 		}
 	}, [])
-	return { data, update }
+	return { state, setState }
 }

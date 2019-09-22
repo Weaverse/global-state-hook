@@ -1,38 +1,52 @@
 import React from "react"
-import { createSubscriber, useSubscriber } from "../src/index"
+import { createSubscription, useSubscription } from "../src/index"
 import { render } from "react-dom"
 
 
-const counterSubscriber = createSubscriber({count: 0, foo: 10})
-const textSubscriber = createSubscriber({ value: "The text will sync together" })
+const counterSubscription = createSubscription({ count: 0, foo: 10 })
+const textSubscription = createSubscription({ value: "The text will sync together" })
+
+const useCounter = () => {
+	let { state, setState } = useSubscription(counterSubscription, ["count"])
+	const increment = () => setState({ count: state.count + 1 })
+	const decrement = () => setState({ count: state.count + 1 })
+	return { count: state.count, increment, decrement }
+
+}
 
 function CounterDisplay() {
-	let {data, update} = useSubscriber(counterSubscriber)
+	let { count, increment, decrement } = useCounter()
 	return (
 		<div>
-			<button onClick={() => update({count: data.count - 1})}>-</button>
-			<span>{data.count}</span>
-			<button onClick={() => update({count: data.count + 1})}>+</button>
+			<button onClick={decrement}>-</button>
+			<span>{count}</span>
+			<button onClick={increment}>+</button>
 		</div>
 	)
 }
 function FooDisplay() {
 	// Only update when foo change
-	let {data, update} = useSubscriber(counterSubscriber, ['foo'])
-	console.log('Only update when foo change', data.foo)
+	let { state, setState } = useSubscription(counterSubscription, ["foo"])
+	console.log("Only update when foo change", state.foo)
 	return (
 		<div>
-			<button onClick={() => update({foo: data.foo - 1})}>-</button>
-			<span>{data.foo}</span>
-			<button onClick={() => update({foo: data.foo + 1})}>+</button>
+			<button onClick={() => setState({ foo: state.foo - 1 })}>-</button>
+			<span>{state.foo}</span>
+			<button onClick={() => setState({ foo: state.foo + 1 })}>+</button>
 		</div>
 	)
 }
 
+const useTextValue = () => {
+	let { state, setState } = useSubscription(textSubscription)
+	const onChange = e => setState({ value: e.target.value })
+	return { value: state.value, onChange }
+}
+
 function Text() {
-	let { data, update } = useSubscriber(textSubscriber)
+	let { value, onChange } = useTextValue()
 	return <div>
-		<input value={data.value} onChange={e => update({ value: e.target.value })}/>
+		<input value={value} onChange={onChange}/>
 	</div>
 }
 
