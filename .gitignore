@@ -1,0 +1,6 @@
+node_modules
+*.log
+example/dist
+dist
+.rts2_cache_*
+.cache
