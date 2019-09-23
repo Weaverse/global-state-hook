@@ -39,12 +39,12 @@ function CounterDisplay() {
 }
 function FooDisplay() {
 	// Only update when foo change
-	let {state, update} = useSubscription(counterSubscription, ['foo'])
+	let {state, setState} = useSubscription(counterSubscription, ['foo'])
 	return (
 		<div>
-			<button onClick={() => update({foo: state.foo - 1})}>-</button>
+			<button onClick={() => setState({foo: state.foo - 1})}>-</button>
 			<span>{state.foo}</span>
-			<button onClick={() => update({foo: state.foo + 1})}>+</button>
+			<button onClick={() => setState({foo: state.foo + 1})}>+</button>
 		</div>
 	)
 }
