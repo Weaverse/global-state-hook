@@ -24,11 +24,11 @@ export interface IStateUpdater {
 }
 
 export function useSubscription(subscriber: ISubscription, pick: string[] = []): IStateUpdater {
-	const { state } = subscriber
+	let { state } = subscriber
 	const [, setUpdate] = React.useState()
 
 	const setState = React.useCallback((newState: State) => {
-		Object.assign(state, newState)
+		typeof newState === "object" ? Object.assign(state, newState) : (state = newState)
 		subscriber.listener.forEach(fn => fn(newState))
 	}, [])
 
