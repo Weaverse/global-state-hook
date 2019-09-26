@@ -10,7 +10,7 @@ export interface ISubscription {
 	state: State
 }
 
-export function createSubscription(initialState = {}): ISubscription {
+export function createSubscription(initialState: any = {}): ISubscription {
 	const state = initialState
 	let listener: Listener[] = []
 	const subscribe = (fn: Listener) => listener.push(fn)
