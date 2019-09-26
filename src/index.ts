@@ -11,7 +11,7 @@ export interface ISubscription {
 }
 
 export function createSubscription(initialState: any = {}): ISubscription {
-	const state = initialState
+	const state = initialState || {}
 	let listener: Listener[] = []
 	const subscribe = (fn: Listener) => listener.push(fn)
 	const unsubscribe = (fn: Listener) => (listener = listener.filter(f => f !== fn))
@@ -28,7 +28,7 @@ export function useSubscription(subscriber: ISubscription, pick: string[] = []):
 	const [, setUpdate] = React.useState()
 
 	const setState = React.useCallback((newState: State) => {
-		typeof newState === "object" ? Object.assign(state, newState) : (state = newState)
+		typeof newState === "object" ? Object.assign(state || {}, newState) : (subscriber.state = newState)
 		subscriber.listener.forEach(fn => fn(newState))
 	}, [])
 
