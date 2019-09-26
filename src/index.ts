@@ -33,9 +33,13 @@ export function useSubscription(subscriber: ISubscription, pick: string[] = []):
 	}, [])
 
 	React.useEffect(() => {
-		const updater = (nextState: State) => (!pick.length || typeof nextState !== "object" || (Object.keys(nextState).find(k => pick.includes(k)))) && setUpdate({})
+		let mounted = true
+		const updater = (nextState: State) => mounted && (!pick.length || typeof nextState !== "object" || (Object.keys(nextState).find(k => pick.includes(k)))) && setUpdate({})
 		subscriber.subscribe(updater)
-		return () => subscriber.unsubscribe(updater)
+		return () => {
+			mounted = false
+			subscriber.unsubscribe(updater)
+		}
 	}, [])
 	return { state, setState }
 }
