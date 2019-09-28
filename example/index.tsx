@@ -1,7 +1,6 @@
-import React, { useContext } from "react"
+import React, { ChangeEvent, useContext } from "react"
 import { createSubscription, useSubscription } from "../src/index"
 import { render } from "react-dom"
-
 
 const counterSubscription = createSubscription({ count: 0, foo: 10 })
 
@@ -10,7 +9,6 @@ const useCounter = () => {
 	const increment = () => setState({ count: state.count + 1 })
 	const decrement = () => setState({ count: state.count + 1 })
 	return { count: state.count, increment, decrement }
-
 }
 
 function CounterDisplay() {
@@ -40,39 +38,41 @@ function FooDisplay() {
 const useTextValue = () => {
 	const textSubscription = useContext(TextContext)
 	let { state, setState } = useSubscription(textSubscription)
-	const onChange = e => setState({ value: e.target.value })
-	return { value: state.value, onChange }
+	const onChange = (e: ChangeEvent<HTMLInputElement>) =>
+		setState(e.target.value)
+	return { value: state, onChange }
 }
 
 function Text() {
 	let { value, onChange } = useTextValue()
-	return <div>
-		<input value={value} onChange={onChange}/>
-	</div>
+	return (
+		<div>
+			<input value={value} onChange={onChange} />
+		</div>
+	)
 }
 
 const TextContext = React.createContext<any>(null)
 
 function TextComponent() {
-	const textSubscription = createSubscription({ value: "The text will sync together" })
-	return <TextContext.Provider value={textSubscription}>
-		<Text/>
+	const textSubscription = createSubscription("The text will sync together")
+	return (
+		<TextContext.Provider value={textSubscription}>
+			<Text />
 
-		{/*You can put the Text component anywhere*/}
-		<Text/>
-	</TextContext.Provider>
+			{/*You can put the Text component anywhere*/}
+			<Text />
+		</TextContext.Provider>
+	)
 }
-
 
 function App() {
 	return (
 		<>
 			<CounterDisplay />
-			<FooDisplay/>
+			<FooDisplay />
 
-			<TextComponent/>
-
-
+			<TextComponent />
 		</>
 	)
 }
