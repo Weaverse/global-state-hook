@@ -15,41 +15,51 @@ export function createSubscription(initialState: any = {}): ISubscription {
 	let listener: Listener[] = []
 	const subscribe = (fn: Listener) => listener.push(fn)
 	const unsubscribe = (fn: Listener) =>
-		(listener = listener.filter(f => f !== fn))
+		(listener = listener.filter((f) => f !== fn))
 	return { subscribe, unsubscribe, listener, state }
 }
 
 export interface IStateUpdater {
-	setState: (newState: State) => void
+	setState: (newState: State, callback?: (newState: State) => void) => void
 	state: State
+	changed: any
 }
 
 export function useSubscription(
 	subscriber: ISubscription,
 	pick: string[] = [],
 ): IStateUpdater {
-	const [, setUpdate] = React.useState()
-	const setState = React.useCallback((newState: State) => {
-		typeof newState === "object"
-			? Object.assign(subscriber.state || {}, newState)
-			: (subscriber.state = newState)
-		subscriber.listener.forEach(fn => fn(newState))
+	const [changed, setUpdate] = React.useState({})
+	const setState = React.useCallback((newState: State, callback = () => {}) => {
+		subscriber.state =
+			newState &&
+			typeof newState === "object" &&
+			newState.constructor === Object
+				? Object.assign({}, subscriber.state, newState)
+				: newState
+		subscriber.listener.forEach((fn) => fn(newState))
+		callback(newState)
 	}, [])
+	const mounted = React.useRef(true)
 
-	React.useEffect(() => {
-		let mounted = true
-		const updater = (nextState: State) =>
-			mounted &&
+	const updater = React.useCallback((nextState: State) => {
+		if (
+			mounted.current &&
 			(!pick.length ||
 				typeof nextState !== "object" ||
-				Object.keys(nextState).find(k => pick.includes(k))) &&
+				nextState.constructor !== Object ||
+				Object.keys(nextState).find((k) => pick.includes(k)))
+		) {
 			setUpdate({})
+		}
+	}, [])
+	React.useEffect(() => {
 		subscriber.subscribe(updater)
 		return () => {
-			mounted = false
+			mounted.current = false
 			subscriber.unsubscribe(updater)
 		}
 	}, [])
 	React.useDebugValue(subscriber.state)
-	return { state: subscriber.state, setState }
+	return { state: subscriber.state, setState, changed }
 }

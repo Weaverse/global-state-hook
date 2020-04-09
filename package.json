@@ -1,7 +1,7 @@
 {
 	"name": "global-state-hook",
-	"version": "1.1.6",
-	"description": "~200kb for exactly what you need to manage global state",
+	"version": "1.2.0",
+	"description": "~200b for exactly what you need to manage global state",
 	"source": "src/index.ts",
 	"main": "dist/index.js",
 	"module": "dist/index.mjs",
@@ -12,8 +12,7 @@
 	"scripts": {
 		"format": "prettier --write '**'",
 		"example": "parcel example/index.html --out-dir example/dist",
-		"build": "rm -rf dist && microbundle --external react --globals react=React --strict --no-compress",
-		"test": "ava"
+		"build": "rm -rf dist && microbundle --external react --globals react=React --strict --no-compress"
 	},
 	"keywords": [],
 	"author": {
@@ -26,18 +25,17 @@
 	},
 	"license": "MIT",
 	"devDependencies": {
-		"@types/react": "^16.9.3",
-		"@types/react-dom": "^16.9.1",
-		"ava": "^2.4.0",
-		"husky": "^3.0.7",
-		"lint-staged": "^9.4.0",
+		"@types/react": "^16.9.33",
+		"@types/react-dom": "^16.9.6",
+		"husky": "^4.2.3",
+		"lint-staged": "^10.1.2",
 		"microbundle": "^0.11.0",
-		"parcel": "^1.12.3",
-		"prettier": "^1.18.2",
-		"react": "^16.10.0",
-		"react-dom": "^16.10.0",
-		"ts-node": "^8.4.1",
-		"typescript": "^3.6.3"
+		"parcel": "^1.12.4",
+		"prettier": "^2.0.4",
+		"react": "^16.13.1",
+		"react-dom": "^16.13.1",
+		"ts-node": "^8.8.2",
+		"typescript": "^3.8.3"
 	},
 	"husky": {
 		"hooks": {
