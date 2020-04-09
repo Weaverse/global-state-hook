@@ -10,7 +10,6 @@
 
 > 200 bytes for exactly what you need to manage React state
 
-
 ## Install
 
 ```sh
@@ -19,43 +18,42 @@ npm install --save global-state-hook
 
 ## Example
 
-```tsx
-import React  from "react"
+```jsx harmony
+import React from "react"
 import { createSubscription, useSubscription } from "global-state-hook"
 import { render } from "react-dom"
 
-
-const counterSubscription = createSubscription({count: 0, foo: 10})
+const counterSubscription = createSubscription({ count: 0, foo: 10 })
 
 function CounterDisplay() {
-	let {state, setState} = useSubscription(counterSubscription)
-	return (
-		<div>
-			<button onClick={() => setState({count: state.count - 1})}>-</button>
-			<span>{state.count}</span>
-			<button onClick={() => setState({count: state.count + 1})}>+</button>
-		</div>
-	)
+  let { state, setState } = useSubscription(counterSubscription)
+  return (
+    <div>
+      <button onClick={() => setState({ count: state.count - 1 })}>-</button>
+      <span>{state.count}</span>
+      <button onClick={() => setState({ count: state.count + 1 })}>+</button>
+    </div>
+  )
 }
 function FooDisplay() {
-	// Only update when foo change
-	let {state, setState} = useSubscription(counterSubscription, ['foo'])
-	return (
-		<div>
-			<button onClick={() => setState({foo: state.foo - 1})}>-</button>
-			<span>{state.foo}</span>
-			<button onClick={() => setState({foo: state.foo + 1})}>+</button>
-		</div>
-	)
+  // Only update when foo change
+  let { state, setState } = useSubscription(counterSubscription, ["foo"])
+  return (
+    <div>
+      <button onClick={() => setState({ foo: state.foo - 1 })}>-</button>
+      <span>{state.foo}</span>
+      <button onClick={() => setState({ foo: state.foo + 1 })}>+</button>
+    </div>
+  )
 }
 
 function App() {
-	return (
-		<>
-			<CounterDisplay />
-			<FooDisplay/>
-		</>
-	)
+  return (
+    <>
+      <CounterDisplay />
+      <FooDisplay />
+    </>
+  )
 }
 
 render(<App />, document.getElementById("root"))
@@ -69,7 +67,6 @@ render(<App />, document.getElementById("root"))
 import { createSubscription } from "global-state-hook"
 
 const counterSubscription = createSubscription({ count: 0 })
-
 ```
 
 ### `useSubscription(subscriber)`
@@ -81,24 +78,22 @@ const counterSubscription = createSubscription({ count: 0 })
 
 // Your custom hook goes here so you can share it to anywhere
 const useCounter = () => {
-	let { state, setState } = useSubscription(counterSubscription)
-	const increment = () => setState({ count: state.count + 1 })
-	const decrement = () => setState({ count: state.count + 1 })
-	return { count: state.count, increment, decrement }
-
+  let { state, setState } = useSubscription(counterSubscription)
+  const increment = () => setState({ count: state.count + 1 })
+  const decrement = () => setState({ count: state.count + 1 })
+  return { count: state.count, increment, decrement }
 }
 
 function Counter() {
-	let { count, increment, decrement } = useCounter()
-	return (
-		<div>
-			<button onClick={decrement}>-</button>
-			<span>{count}</span>
-			<button onClick={increment}>+</button>
-		</div>
-	)
+  let { count, increment, decrement } = useCounter()
+  return (
+    <div>
+      <button onClick={decrement}>-</button>
+      <span>{count}</span>
+      <button onClick={increment}>+</button>
+    </div>
+  )
 }
-
 ```
 
 ### `useSubscription(subscriber, pick: string[])`
@@ -109,63 +104,64 @@ import { createSubscription, useSubscription } from "global-state-hook"
 const counterSubscription = createSubscription({ count: 0, foo: 10 })
 
 function Foo() {
-	// Only update when foo change
-	let { state, setState } = useSubscription(counterSubscription, ["foo"])
+  // Only update when foo change
+  let { state, setState } = useSubscription(counterSubscription, ["foo"])
 
-	return (
-		<div>
-			<button onClick={() => setState({ foo: state.foo - 1 })}>-</button>
-			<span>{state.foo}</span>
-			<button onClick={() => setState({ foo: state.foo + 1 })}>+</button>
-		</div>
-	)
+  return (
+    <div>
+      <button onClick={() => setState({ foo: state.foo - 1 })}>-</button>
+      <span>{state.foo}</span>
+      <button onClick={() => setState({ foo: state.foo + 1 })}>+</button>
+    </div>
+  )
 }
-
 ```
 
-
 ## Why use global-state-hook?
+
 **It's minimal** You only need to learn 2 API: createSubscription, useSubscription.
 
 **It's easy to integrate** Can integrate with any React library.
 
 **It's small** Only 50 lines of code for this library.
 
-
 ## Guide
 
 ### Global state is not bad.
+
 It's about how you manage it, global state will not be bad if you do it the right way.
 You can consider using `Context.Provider` to provide your global subscription so it can be clean up after the component unmounted. Example:
 
 ```js
-
-const TextContext = React.createContext<any>(null)
+const TextContext = React.createContext < any > null
 
 const useTextValue = () => {
-	const textSubscription = useContext(TextContext)
-	let { state, setState } = useSubscription(textSubscription)
-	const onChange = e => setState({ value: e.target.value })
-	return { value: state.value, onChange }
+  const textSubscription = useContext(TextContext)
+  let { state, setState } = useSubscription(textSubscription)
+  const onChange = (e) => setState({ value: e.target.value })
+  return { value: state.value, onChange }
 }
 
 function Text() {
-	let { value, onChange } = useTextValue()
-	return <div>
-		<input value={value} onChange={onChange}/>
-	</div>
+  let { value, onChange } = useTextValue()
+  return (
+    <div>
+      <input value={value} onChange={onChange} />
+    </div>
+  )
 }
-
 
 function TextComponent() {
-	const textSubscription = createSubscription({ value: "The text will sync together" })
-	return <TextContext.Provider value={textSubscription}>
-			<Text/>
-	</TextContext.Provider>
+  const textSubscription = createSubscription({
+    value: "The text will sync together",
+  })
+  return (
+    <TextContext.Provider value={textSubscription}>
+      <Text />
+    </TextContext.Provider>
+  )
 }
-
 ```
-
 
 ### Tip#1: Select your state property that you want to subscribe to
 
@@ -178,31 +174,31 @@ let { state: text, setState: setText } = useSubscription(textSubscription)
 
 // Change the text value:
 setText("New text value")
-
 ```
 
 But in case you have a very large Component with many state in it, so what is the proper way to handle? Just see my code below:
 
-
 ```js
-
 import { createSubscription, useSubscription } from "global-state-hook"
 
 const multiStateSubscription = createSubscription({ foo: 1, bar: 2, baz: 3 })
 
 function Foo() {
-	// Only update when foo or baz change
-	let { state, setState } = useSubscription(multiStateSubscription, ["foo", "baz"])
+  // Only update when foo or baz change
+  let { state, setState } = useSubscription(multiStateSubscription, [
+    "foo",
+    "baz",
+  ])
 
-	return (
-		<div>
-			<button onClick={() => setState({ foo: state.foo - 1 })}>-</button>
-			<span>{state.foo}</span>
-			<span>{state.baz}</span>
-			<button onClick={() => setState({ foo: state.foo + 1 })}>+</button>
-		</div>
-	)
+  return (
+    <div>
+      <button onClick={() => setState({ foo: state.foo - 1 })}>-</button>
+      <span>{state.foo}</span>
+      <span>{state.baz}</span>
+      <button onClick={() => setState({ foo: state.foo + 1 })}>+</button>
+    </div>
+  )
 }
-
 ```
+
 It's so easy right? :D
