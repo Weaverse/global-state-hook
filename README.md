@@ -18,6 +18,8 @@ npm install --save global-state-hook
 
 ## Example
 
+[![Edit bold-ellis-6rg1t](https://codesandbox.io/static/img/play-codesandbox.svg)](https://codesandbox.io/s/bold-ellis-6rg1t?fontsize=14&hidenavigation=1&theme=dark)
+
 ```jsx harmony
 import React from "react"
 import { createSubscription, useSubscription } from "global-state-hook"
@@ -200,7 +202,9 @@ function Foo() {
   )
 }
 ```
+
 ### Reducer pattern:
+
 For those who still in love with redux, the reducer pattern will fit for you:
 
 ```js
@@ -231,13 +235,10 @@ function Counter() {
 }
 ```
 
-
 ### Misc
 
 # Support debugging with React Developer Tools
 
-
 ![React Dev Tools](./example/react-dev-tools.png)
-
 
 It's so easy right? :D
