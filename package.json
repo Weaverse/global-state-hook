@@ -1,7 +1,7 @@
 {
 	"name": "global-state-hook",
-	"version": "1.3.3",
-	"description": "~200b for exactly what you need to manage global state",
+	"version": "1.3.4",
+	"description": "Super tiny state sharing library with hooks",
 	"source": "src/index.ts",
 	"main": "dist/index.js",
 	"module": "dist/index.mjs",

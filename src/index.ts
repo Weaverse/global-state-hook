@@ -28,13 +28,14 @@ export interface IStateReduceUpdater {
 	state: State
 }
 
-function useSubscriber(subscriber: ISubscription, pick: string[] = []) {
-	const [, setUpdate] = React.useState({})
+function useSubscriber(subscriber: ISubscription, pick?: string[]) {
+	const [changed, setUpdate] = React.useState({})
 	const mounted = React.useRef(true)
 	const updater = React.useCallback((nextState: State) => {
 		if (
 			mounted.current &&
-			(!pick.length ||
+			(!pick ||
+				!pick.length ||
 				typeof nextState !== "object" ||
 				nextState.constructor !== Object ||
 				Object.keys(nextState).find((k) => pick.includes(k)))
@@ -49,7 +50,7 @@ function useSubscriber(subscriber: ISubscription, pick: string[] = []) {
 			subscriber.unsubscribe(updater)
 		}
 	}, [])
-	return null
+	return changed
 }
 
 export function useReducerSubscription(
@@ -69,7 +70,7 @@ export function useReducerSubscription(
 
 export function useSubscription(
 	subscriber: ISubscription,
-	pick: string[] = [],
+	pick?: string[],
 ): IStateUpdater {
 	useSubscriber(subscriber, pick)
 
