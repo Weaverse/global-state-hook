@@ -1,9 +1,5 @@
 import React, { ChangeEvent, useContext, useEffect } from "react"
-import {
-	createSubscription,
-	useReducerSubscription,
-	useSubscription,
-} from "../src/index"
+import { createSubscription, useReducerSubscription, useSubscription } from "../src/index"
 import { render } from "react-dom"
 
 const counterSubscription = createSubscription({ count: 0, foo: 10 })
@@ -11,7 +7,7 @@ const counterSubscription = createSubscription({ count: 0, foo: 10 })
 const useCounter = () => {
 	let { state, setState } = useSubscription(counterSubscription)
 	const increment = () => setState({ count: state.count + 1 })
-	const decrement = () => setState({ count: state.count + 1 })
+	const decrement = () => setState({ count: state.count - 1 })
 	return { count: state.count, increment, decrement }
 }
 

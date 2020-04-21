@@ -200,7 +200,7 @@ function Foo() {
   )
 }
 ```
-
+### Reducer pattern:
 For those who still in love with redux, the reducer pattern will fit for you:
 
 ```js
@@ -230,5 +230,11 @@ function Counter() {
   )
 }
 ```
+
+
+###Misc
+Support debugging with React Developer Tools
+![React Dev Tools](./example/react-dev-tools.png)
+
 
 It's so easy right? :D

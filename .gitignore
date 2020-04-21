@@ -4,3 +4,6 @@ example/dist
 dist
 .rts2_cache_*
 .cache
+.idea
+.vscode
+yarn.lock
