@@ -232,9 +232,9 @@ function Counter() {
 ```
 
 
-###Misc
+### Misc
 
-#Support debugging with React Developer Tools
+# Support debugging with React Developer Tools
 
 
 ![React Dev Tools](./example/react-dev-tools.png)
