@@ -1,5 +1,9 @@
 import React, { ChangeEvent, useContext, useEffect } from "react"
-import { createSubscription, useSubscription } from "../src/index"
+import {
+	createSubscription,
+	useReducerSubscription,
+	useSubscription,
+} from "../src/index"
 import { render } from "react-dom"
 
 const counterSubscription = createSubscription({ count: 0, foo: 10 })
@@ -118,9 +122,35 @@ function MountAndUnmount() {
 	)
 }
 
+const initialState = { count: 0 }
+const counter2Sub = createSubscription(initialState)
+function reducer(state: any, action: any) {
+	switch (action.type) {
+		case "increment":
+			return { count: state.count + 1 }
+		case "decrement":
+			return { count: state.count - 1 }
+		default:
+			throw new Error()
+	}
+}
+
+function Counter2() {
+	const { state, dispatch } = useReducerSubscription(counter2Sub, reducer)
+	return (
+		<>
+			Count: {state.count}
+			<button onClick={() => dispatch({ type: "decrement" })}>-</button>
+			<button onClick={() => dispatch({ type: "increment" })}>+</button>
+		</>
+	)
+}
+
 function App() {
 	return (
 		<>
+			<Counter2 />
+			<Counter2 />
 			<CounterDisplay />
 			<FooDisplay />
 			<TextComponent />

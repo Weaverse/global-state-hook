@@ -2,12 +2,12 @@ import React from "react"
 
 type State = object | any
 type Listener = (newState: State) => void
-
 export interface ISubscription {
 	subscribe: (fn: Listener) => void
 	unsubscribe: (fn: Listener) => void
 	listener: Listener[]
 	state: State
+	initialState: State
 }
 
 export function createSubscription(initialState: any = {}): ISubscription {
@@ -16,32 +16,21 @@ export function createSubscription(initialState: any = {}): ISubscription {
 	const subscribe = (fn: Listener) => listener.push(fn)
 	const unsubscribe = (fn: Listener) =>
 		(listener = listener.filter((f) => f !== fn))
-	return { subscribe, unsubscribe, listener, state }
+	return { subscribe, unsubscribe, listener, state, initialState }
 }
 
 export interface IStateUpdater {
 	setState: (newState: State, callback?: (newState: State) => void) => void
 	state: State
-	changed: any
+}
+export interface IStateReduceUpdater {
+	dispatch: (p: any) => void
+	state: State
 }
 
-export function useSubscription(
-	subscriber: ISubscription,
-	pick: string[] = [],
-): IStateUpdater {
-	const [changed, setUpdate] = React.useState({})
-	const setState = React.useCallback((newState: State, callback = () => {}) => {
-		subscriber.state =
-			newState &&
-			typeof newState === "object" &&
-			newState.constructor === Object
-				? Object.assign({}, subscriber.state, newState)
-				: newState
-		subscriber.listener.forEach((fn) => fn(newState))
-		callback(newState)
-	}, [])
+function useSubscriber(subscriber: ISubscription, pick: string[] = []) {
+	const [, setUpdate] = React.useState({})
 	const mounted = React.useRef(true)
-
 	const updater = React.useCallback((nextState: State) => {
 		if (
 			mounted.current &&
@@ -60,6 +49,41 @@ export function useSubscription(
 			subscriber.unsubscribe(updater)
 		}
 	}, [])
+	return null
+}
+
+export function useReducerSubscription(
+	subscriber: ISubscription,
+	reducer: any = () => {},
+): IStateReduceUpdater {
+	useSubscriber(subscriber)
+	const dispatch = (...args: any) => {
+		const newState = reducer(subscriber.state, ...args)
+		subscriber.state = Object.assign({}, subscriber.state, newState)
+		subscriber.listener.forEach((fn) => fn(newState))
+	}
 	React.useDebugValue(subscriber.state)
-	return { state: subscriber.state, setState, changed }
+
+	return { state: subscriber.state, dispatch }
+}
+
+export function useSubscription(
+	subscriber: ISubscription,
+	pick: string[] = [],
+): IStateUpdater {
+	useSubscriber(subscriber, pick)
+
+	const setState = React.useCallback((newState: State, callback = () => {}) => {
+		subscriber.state =
+			newState &&
+			typeof newState === "object" &&
+			newState.constructor === Object
+				? Object.assign({}, subscriber.state, newState)
+				: newState
+		subscriber.listener.forEach((fn) => fn(newState))
+		callback(newState)
+	}, [])
+
+	React.useDebugValue(subscriber.state)
+	return { state: subscriber.state, setState }
 }

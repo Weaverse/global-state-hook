@@ -201,4 +201,34 @@ function Foo() {
 }
 ```
 
+For those who still in love with redux, the reducer pattern will fit for you:
+
+```js
+const counterSubscription = createSubscription({ count: 0 })
+function reducer(state, action) {
+  switch (action.type) {
+    case "increment":
+      return { count: state.count + 1 }
+    case "decrement":
+      return { count: state.count - 1 }
+    default:
+      throw new Error()
+  }
+}
+
+function Counter() {
+  const { state, dispatch } = useReducerSubscription(
+    counterSubscription,
+    reducer,
+  )
+  return (
+    <>
+      Count: {state.count}
+      <button onClick={() => dispatch({ type: "decrement" })}>-</button>
+      <button onClick={() => dispatch({ type: "increment" })}>+</button>
+    </>
+  )
+}
+```
+
 It's so easy right? :D
