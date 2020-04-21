@@ -8,7 +8,7 @@
 
 # Use Global State Hook
 
-> 200 bytes for exactly what you need to manage React state
+> Super tiny state sharing library with hooks
 
 ## Install
 
@@ -233,7 +233,10 @@ function Counter() {
 
 
 ###Misc
-Support debugging with React Developer Tools
+
+#Support debugging with React Developer Tools
+
+
 ![React Dev Tools](./example/react-dev-tools.png)
 
 
