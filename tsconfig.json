@@ -1,22 +1,17 @@
 {
-  "include": [
-    "src"
-  ],
-  "exclude": [
-    "test",
-    "example"
-  ],
-  "compilerOptions": {
-    "target": "ES5",
-    "module": "ES2015",
-    "jsx": "react",
-    "declaration": true,
-    "declarationMap": true,
-    "strict": true,
-    "noUnusedLocals": true,
-    "noUnusedParameters": true,
-    "noImplicitReturns": true,
-    "noFallthroughCasesInSwitch": true,
-    "esModuleInterop": true
-  }
+	"include": ["src"],
+	"exclude": ["test", "example"],
+	"compilerOptions": {
+		"target": "ES5",
+		"module": "ESNext",
+		"jsx": "react",
+		"declaration": true,
+		"declarationMap": true,
+		"strict": true,
+		"noUnusedLocals": true,
+		"noUnusedParameters": true,
+		"noImplicitReturns": true,
+		"noFallthroughCasesInSwitch": true,
+		"esModuleInterop": true
+	}
 }

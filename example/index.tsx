@@ -1,5 +1,9 @@
 import React, { ChangeEvent, useContext, useEffect } from "react"
-import { createSubscription, useReducerSubscription, useSubscription } from "../src/index"
+import {
+	createSubscription,
+	useReducerSubscription,
+	useSubscription,
+} from "../dist/index"
 import { render } from "react-dom"
 
 const counterSubscription = createSubscription({ count: 0, foo: 10 })
@@ -28,7 +32,9 @@ function FooDisplay() {
 	console.log("Only update when foo change", state)
 	return (
 		<div>
-			<button onClick={() => setState({ foo: state.foo - 1 })}>-</button>
+			<button onClick={() => setState((x: any) => ({ foo: x.foo - 1 }))}>
+				-
+			</button>
 			<span>{state.foo}</span>
 			<button onClick={() => setState({ foo: state.foo + 1 })}>+</button>
 		</div>
@@ -84,8 +90,8 @@ function DelayFetch() {
 			"fetching... it will stop update if component is unmount but the state will still be changed",
 		)
 		setTimeout(() => {
-			setState({ data: fakeData }, (newState) => {
-				console.log("fetch data done...", newState)
+			setState({ data: fakeData }, () => {
+				console.log("fetch data done...", state)
 			})
 		}, 5000)
 	}, [state.display])

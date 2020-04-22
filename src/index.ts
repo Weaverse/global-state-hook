@@ -1,37 +1,44 @@
 import React from "react"
 
-type State = object | any
-type Listener = (newState: State) => void
-export interface ISubscription {
-	subscribe: (fn: Listener) => void
-	unsubscribe: (fn: Listener) => void
-	listener: Listener[]
-	state: State
-	initialState: State
+type Listener<S> = (newState: S) => void
+type SetStateAction<S> = S extends any ? any : S | ((prevState: S) => S)
+
+export interface ISubscription<S extends any> {
+	subscribe: (fn: Listener<S>) => void
+	unsubscribe: (fn: Listener<S>) => void
+	listener: Listener<S>[]
+	state: S
 }
 
-export function createSubscription(initialState: any = {}): ISubscription {
-	const state = initialState || {}
-	let listener: Listener[] = []
-	const subscribe = (fn: Listener) => listener.push(fn)
-	const unsubscribe = (fn: Listener) =>
+export function createSubscription<S extends any>(
+	initialState?: S,
+): ISubscription<S> {
+	const state: S = initialState || ({} as any)
+	let listener: Listener<S>[] = []
+	const subscribe = (fn: Listener<S>) => listener.push(fn)
+	const unsubscribe = (fn: Listener<S>) =>
 		(listener = listener.filter((f) => f !== fn))
-	return { subscribe, unsubscribe, listener, state, initialState }
+	return { subscribe, unsubscribe, listener, state }
 }
 
-export interface IStateUpdater {
-	setState: (newState: State, callback?: (newState: State) => void) => void
-	state: State
+export interface IStateUpdater<S> {
+	setState: (
+		newState: SetStateAction<S>,
+		callback?: (newState: S) => void,
+	) => void
+	state: S
 }
-export interface IStateReduceUpdater {
+export interface IStateReduceUpdater<S> {
 	dispatch: (p: any) => void
-	state: State
+	state: S
 }
-
-function useSubscriber(subscriber: ISubscription, pick?: string[]) {
+function useSubscriber<S extends any>(
+	subscriber: ISubscription<S>,
+	pick?: string[],
+) {
 	const [changed, setUpdate] = React.useState({})
 	const mounted = React.useRef(true)
-	const updater = React.useCallback((nextState: State) => {
+	const updater = React.useCallback((nextState: S) => {
 		if (
 			mounted.current &&
 			(!pick ||
@@ -53,10 +60,10 @@ function useSubscriber(subscriber: ISubscription, pick?: string[]) {
 	return changed
 }
 
-export function useReducerSubscription(
-	subscriber: ISubscription,
+export function useReducerSubscription<S extends any>(
+	subscriber: ISubscription<S>,
 	reducer: any = () => {},
-): IStateReduceUpdater {
+): IStateReduceUpdater<S> {
 	useSubscriber(subscriber)
 	const dispatch = (...args: any) => {
 		const newState = reducer(subscriber.state, ...args)
@@ -68,23 +75,28 @@ export function useReducerSubscription(
 	return { state: subscriber.state, dispatch }
 }
 
-export function useSubscription(
-	subscriber: ISubscription,
+export function useSubscription<S extends any>(
+	subscriber: ISubscription<S>,
 	pick?: string[],
-): IStateUpdater {
+): IStateUpdater<S> {
 	useSubscriber(subscriber, pick)
-
-	const setState = React.useCallback((newState: State, callback = () => {}) => {
-		subscriber.state =
-			newState &&
-			typeof newState === "object" &&
-			newState.constructor === Object
-				? Object.assign({}, subscriber.state, newState)
-				: newState
-		subscriber.listener.forEach((fn) => fn(newState))
-		callback(newState)
-	}, [])
-
 	React.useDebugValue(subscriber.state)
-	return { state: subscriber.state, setState }
+	return {
+		state: subscriber.state,
+		setState: React.useCallback(
+			(newState: SetStateAction<S>, callback?: Function) => {
+				if (typeof newState === "object" && newState.constructor === Object) {
+					subscriber.state = Object.assign({}, subscriber.state, newState)
+				} else if (typeof newState === "function") {
+					const nextState = newState(subscriber.state)
+					subscriber.state = Object.assign({}, subscriber.state, nextState)
+				} else {
+					subscriber.state = newState
+				}
+				subscriber.listener.forEach((fn) => fn(newState))
+				callback && callback()
+			},
+			[subscriber.state, pick],
+		),
+	}
 }
