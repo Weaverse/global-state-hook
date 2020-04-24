@@ -1,7 +1,6 @@
 import React from "react"
 
 type Listener<S> = (newState: S) => void
-type SetStateAction<S> = S extends any ? any : S | ((prevState: S) => S)
 
 export interface ISubscription<S extends any> {
 	subscribe: (fn: Listener<S>) => void
@@ -22,10 +21,7 @@ export function createSubscription<S extends any>(
 }
 
 export interface IStateUpdater<S> {
-	setState: (
-		newState: SetStateAction<S>,
-		callback?: (newState: S) => void,
-	) => void
+	setState: (newState: any, callback?: (newState: S) => void) => void
 	state: S
 }
 export interface IStateReduceUpdater<S> {
@@ -84,7 +80,7 @@ export function useSubscription<S extends any>(
 	return {
 		state: subscriber.state,
 		setState: React.useCallback(
-			(newState: SetStateAction<S>, callback?: Function) => {
+			(newState: any, callback?: Function) => {
 				if (typeof newState === "object" && newState.constructor === Object) {
 					subscriber.state = Object.assign({}, subscriber.state, newState)
 				} else if (typeof newState === "function") {

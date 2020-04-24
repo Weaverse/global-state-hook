@@ -3,7 +3,7 @@ import {
 	createSubscription,
 	useReducerSubscription,
 	useSubscription,
-} from "../dist/index"
+} from "../src/index"
 import { render } from "react-dom"
 
 const counterSubscription = createSubscription({ count: 0, foo: 10 })
