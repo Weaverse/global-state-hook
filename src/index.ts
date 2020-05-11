@@ -7,6 +7,7 @@ export interface ISubscription<S extends any> {
 	unsubscribe: (fn: Listener<S>) => void
 	listener: Listener<S>[]
 	state: S
+	updateState: (nextState: S, forceUpdate?: boolean) => void
 }
 
 export function createSubscription<S extends any>(
@@ -17,7 +18,11 @@ export function createSubscription<S extends any>(
 	const subscribe = (fn: Listener<S>) => listener.push(fn)
 	const unsubscribe = (fn: Listener<S>) =>
 		(listener = listener.filter((f) => f !== fn))
-	return { subscribe, unsubscribe, listener, state }
+	const updateState = (nextState: S, forceUpdate = false) => {
+		Object.assign(state, nextState)
+		forceUpdate && listener.forEach((fn) => fn(nextState))
+	}
+	return { subscribe, unsubscribe, listener, state, updateState }
 }
 
 export interface IStateUpdater<S> {
