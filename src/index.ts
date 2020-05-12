@@ -18,7 +18,7 @@ export function createSubscription<S extends any>(
 	const subscribe = (fn: Listener<S>) => listener.push(fn)
 	const unsubscribe = (fn: Listener<S>) =>
 		(listener = listener.filter((f) => f !== fn))
-	const updateState = (nextState: S, forceUpdate = false) => {
+	const updateState = (nextState: S, forceUpdate = true) => {
 		Object.assign(state, nextState)
 		forceUpdate && listener.forEach((fn) => fn(nextState))
 	}
