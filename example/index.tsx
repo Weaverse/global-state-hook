@@ -1,6 +1,8 @@
+// @ts-ignore
 import React, { ChangeEvent, useContext, useEffect } from "react"
 import {
 	createSubscription,
+	ISubscription,
 	useReducerSubscription,
 	useSubscription,
 } from "../src/index"
@@ -42,7 +44,7 @@ function FooDisplay() {
 }
 
 const useTextValue = () => {
-	const textSubscription = useContext(TextContext)
+	const textSubscription = useContext<ISubscription<any>>(TextContext)
 	let { state, setState } = useSubscription(textSubscription)
 	const onChange = (e: ChangeEvent<HTMLInputElement>) =>
 		setState(e.target.value)
@@ -58,7 +60,7 @@ function Text() {
 	)
 }
 
-const TextContext = React.createContext<any>(null)
+const TextContext = React.createContext<ISubscription<string>>(null)
 
 function TextComponent() {
 	const textSubscription = createSubscription("The text will sync together")
