@@ -159,11 +159,8 @@ export const useReactive = <S extends object>(reactiveStore: IReactive<S>, pick?
 		}
 	}, [pick])
 	React.useEffect(() => {
-		if (reactiveStore) {
-			reactiveStore.subscribe(updater)
-			return () => reactiveStore.unsubscribe(updater)
-		}
-		return
+		reactiveStore.subscribe(updater)
+		return () => reactiveStore.unsubscribe(updater)
 		// eslint-disable-next-line react-hooks/exhaustive-deps
 	}, [])
 	return reactiveStore.store
