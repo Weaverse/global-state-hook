@@ -16,6 +16,32 @@
 npm install --save global-state-hook
 ```
 
+
+## Update:
+#### With new Reactive pattern, you can now write your React App like that:
+```typescript jsx
+const sourceOfTruth = createReactive({
+	text1: 'Text 1 sync together',
+	text2: 'Text 2 walk alone.'
+})
+const Text1 = () => {
+	const state = useReactive(sourceOfTruth, ['text1'])
+	return <input value={state.text1} onChange={e => state.text1 = e.target.value} />
+}
+const Text2 = () => {
+	const state = useReactive(sourceOfTruth, ['text2'])
+	return <input value={state.text2} onChange={e => state.text2 = e.target.value} />
+}
+const ReactiveApp = () => {
+	return <div>
+		<h1>Reactive pattern:</h1>
+		<Text1/>
+		<Text2/>
+		<Text1/>
+	</div>
+}
+```
+
 ## Example
 
 [![Edit bold-ellis-6rg1t](https://codesandbox.io/static/img/play-codesandbox.svg)](https://codesandbox.io/s/bold-ellis-6rg1t?fontsize=14&hidenavigation=1&theme=dark)

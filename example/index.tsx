@@ -157,7 +157,6 @@ const sourceOfTruth = createReactive({
 	text1: 'Text 1 sync together',
 	text2: 'Text 2 walk alone.'
 })
-
 const Text1 = () => {
 	const state = useReactive(sourceOfTruth, ['text1'])
 	return <input value={state.text1} onChange={e => state.text1 = e.target.value} />
@@ -166,17 +165,12 @@ const Text2 = () => {
 	const state = useReactive(sourceOfTruth, ['text2'])
 	return <input value={state.text2} onChange={e => state.text2 = e.target.value} />
 }
-
 const ReactiveApp = () => {
-
 	return <div>
 		<h1>Reactive pattern:</h1>
-
-		<>
-			<Text1 />
-			<Text2/>
-			<Text1 />
-		</>
+		<Text1/>
+		<Text2/>
+		<Text1/>
 	</div>
 }
 
