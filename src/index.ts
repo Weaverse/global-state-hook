@@ -59,9 +59,9 @@ export interface IStateReduceUpdater<S> {
 	state: S
 }
 
-function useSubscriber<S extends object>(
+function useSubscriber<S extends object, P extends [keyof S] | Array<keyof S>>(
 	subscriber: ISubscription<S>,
-	pick?: string[]
+	pick?: P
 ) {
 	if (!subscriber) {
 		console.trace('Missing subscriber!!')
@@ -103,9 +103,9 @@ export function useReducerSubscription<S extends object>(
 	return { state: subscriber?.state, dispatch }
 }
 
-export function useSubscription<S extends object>(
+export function useSubscription<S extends object, P extends [keyof S] | Array<keyof S>>(
 	subscriber: ISubscription<S>,
-	pick?: string[]
+	pick?: P
 ): IStateUpdater<S> {
 	const changed = useSubscriber(subscriber, pick)
 	React.useDebugValue(subscriber?.state)
