@@ -68,11 +68,7 @@ function useSubscriber<S extends object, P extends [keyof S] | Array<keyof S>>(
 	}
 	const [changed, setUpdate] = React.useState({})
 	const updater = React.useCallback((nextState: S) => {
-		if (subscriber &&
-			(!pick ||
-				!pick.length ||
-				Object.keys(nextState).find((k) => !!pick.filter(item => item === k).length))
-		) {
+		if (subscriber && (!pick?.length || Object.keys(nextState).find((k) => pick.some(item => item === k)))) {
 			setUpdate({})
 		}
 	}, [pick])
