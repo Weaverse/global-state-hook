@@ -71,7 +71,7 @@ function useSubscriber<S extends object, P extends [keyof S] | Array<keyof S>>(
 		if (subscriber &&
 			(!pick ||
 				!pick.length ||
-				Object.keys(nextState).find((k) => pick.includes(k)))
+				Object.keys(nextState).find((k) => !!pick.filter(item => item === k).length))
 		) {
 			setUpdate({})
 		}
