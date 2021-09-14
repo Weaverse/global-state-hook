@@ -1,6 +1,6 @@
 {
 	"name": "global-state-hook",
-	"version": "2.1.0",
+	"version": "2.2.0",
 	"description": "Super tiny state sharing library with hooks",
 	"source": "src/index.ts",
 	"main": "dist/index.js",
