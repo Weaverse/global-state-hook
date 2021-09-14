@@ -1,12 +1,18 @@
 {
 	"name": "global-state-hook",
-	"version": "2.2.0",
+	"version": "2.3.0",
 	"description": "Super tiny state sharing library with hooks",
 	"source": "src/index.ts",
 	"main": "dist/index.js",
 	"module": "dist/index.mjs",
 	"unpkg": "dist/index.umd.js",
 	"types": "dist/index.d.ts",
+	"files": [
+		"dist/index.js",
+		"dist/index.mjs",
+		"dist/index.umd.js",
+		"dist/index.d.ts"
+	],
 	"amdName": "GlobalHookState",
 	"sideEffects": false,
 	"scripts": {
