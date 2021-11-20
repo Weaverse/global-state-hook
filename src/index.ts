@@ -19,22 +19,21 @@ export interface IReactive<S extends any> {
 }
 
 export function createSubscription<S extends object>(
-	initialState?: S
+	initialState?: S,
 ): ISubscription<S> {
 	let state: S = initialState || ({} as any)
 	let listener: Set<Listener<S>> = new Set()
 	const subscribe = (fn: Listener<S>) => {
 		listener.add(fn)
 	}
-	const unsubscribe = (fn: Listener<S>) =>
-		listener.delete(fn)
+	const unsubscribe = (fn: Listener<S>) => listener.delete(fn)
 	const updateState = (nextState: S, forceUpdate = true) => {
 		state = { ...state, ...nextState }
 		if (forceUpdate) {
-			listener.forEach(fn => fn(nextState))
+			listener.forEach((fn) => fn(nextState))
 		}
 	}
-	return {
+	let store = {
 		subscribe,
 		unsubscribe,
 		listener,
@@ -44,8 +43,15 @@ export function createSubscription<S extends object>(
 		set state(nextState) {
 			state = nextState
 		},
-		updateState
+		updateState,
+		useSubscriptionValue: (pick?: Array<keyof S>) => {
+			return useSubscription(store, pick)
+		},
+		useDispatch: (reducer: () => any) => {
+			return useReducerSubscription(store, reducer)
+		},
 	}
+	return store
 }
 
 export interface IStateUpdater<S> {
@@ -61,17 +67,24 @@ export interface IStateReduceUpdater<S> {
 
 function useSubscriber<S extends object, P extends [keyof S] | Array<keyof S>>(
 	subscriber: ISubscription<S>,
-	pick?: P
+	pick?: P,
 ) {
 	if (!subscriber) {
-		console.trace('Missing subscriber!!')
+		console.trace("Missing subscriber!!")
 	}
 	const [changed, setUpdate] = React.useState({})
-	const updater = React.useCallback((nextState: S) => {
-		if (subscriber && (!pick?.length || Object.keys(nextState).find((k) => pick.some(item => item === k)))) {
-			setUpdate({})
-		}
-	}, [pick])
+	const updater = React.useCallback(
+		(nextState: S) => {
+			if (
+				subscriber &&
+				(!pick?.length ||
+					Object.keys(nextState).find((k) => pick.some((item) => item === k)))
+			) {
+				setUpdate({})
+			}
+		},
+		[pick],
+	)
 	React.useEffect(() => {
 		if (subscriber) {
 			subscriber.subscribe(updater)
@@ -85,24 +98,23 @@ function useSubscriber<S extends object, P extends [keyof S] | Array<keyof S>>(
 
 export function useReducerSubscription<S extends object>(
 	subscriber: ISubscription<S>,
-	reducer: any = () => {
-	}
+	reducer: any = () => {},
 ): IStateReduceUpdater<S> {
 	useSubscriber(subscriber)
 	const dispatch = (...args: any) => {
 		const newState = reducer(subscriber.state, ...args)
 		subscriber.state = Object.assign({}, subscriber.state, newState)
-		subscriber.listener.forEach(fn => fn(newState))
+		subscriber.listener.forEach((fn) => fn(newState))
 	}
 	React.useDebugValue(subscriber.state)
 
 	return { state: subscriber?.state, dispatch }
 }
 
-export function useSubscription<S extends object, P extends [keyof S] | Array<keyof S>>(
-	subscriber: ISubscription<S>,
-	pick?: P
-): IStateUpdater<S> {
+export function useSubscription<
+	S extends object,
+	P extends [keyof S] | Array<keyof S>,
+>(subscriber: ISubscription<S>, pick?: P): IStateUpdater<S> {
 	const changed = useSubscriber(subscriber, pick)
 	React.useDebugValue(subscriber?.state)
 
@@ -114,25 +126,26 @@ export function useSubscription<S extends object, P extends [keyof S] | Array<ke
 				if (!subscriber) {
 					return
 				}
-				if (typeof newState === 'object' && newState.constructor === Object) {
+				if (typeof newState === "object" && newState.constructor === Object) {
 					subscriber.state = Object.assign({}, subscriber.state, newState)
-				} else if (typeof newState === 'function') {
+				} else if (typeof newState === "function") {
 					const nextState = newState(subscriber.state)
 					subscriber.state = Object.assign({}, subscriber.state, nextState)
 				} else {
 					subscriber.state = newState
 				}
-				subscriber.listener.forEach(fn => fn(newState))
+				subscriber.listener.forEach((fn) => fn(newState))
 				callback && callback()
 			},
 			// eslint-disable-next-line react-hooks/exhaustive-deps
-			[subscriber.state, pick]
-		)
+			[subscriber.state, pick],
+		),
 	}
 }
 
-
-export const createReactive = <S extends object>(initialState: S): IReactive<S> => {
+export const createReactive = <S extends object>(
+	initialState: S,
+): IReactive<S> => {
 	let listener: Set<Listener<string>> = new Set()
 	const subscribe = (fn: Listener<string>) => listener.add(fn)
 	const unsubscribe = (fn: Listener<string>) => listener.delete(fn)
@@ -140,25 +153,33 @@ export const createReactive = <S extends object>(initialState: S): IReactive<S> 
 		set(target, p: string, value, receiver) {
 			listener.forEach((fn) => fn(p))
 			return Reflect.set(target, p, value, receiver)
-		}
+		},
 	})
 	return {
-		listener, store, subscribe, unsubscribe
+		listener,
+		store,
+		subscribe,
+		unsubscribe,
 	}
 }
 
-export const useReactive = <S extends object>(reactiveStore: IReactive<S>, pick?: Array<string>) => {
+export const useReactive = <S extends object>(
+	reactiveStore: IReactive<S>,
+	pick?: Array<string>,
+) => {
 	const [, setUpdate] = React.useState({})
-	const updater = React.useCallback((prop) => {
-		if (!pick || (Array.isArray(pick) && pick.includes(prop))) {
-			setUpdate({})
-		}
-	}, [pick])
+	const updater = React.useCallback(
+		(prop) => {
+			if (!pick || (Array.isArray(pick) && pick.includes(prop))) {
+				setUpdate({})
+			}
+		},
+		[pick],
+	)
 	React.useEffect(() => {
 		reactiveStore.subscribe(updater)
 		return () => reactiveStore.unsubscribe(updater)
 		// eslint-disable-next-line react-hooks/exhaustive-deps
 	}, [])
 	return reactiveStore.store
-};
-
+}
