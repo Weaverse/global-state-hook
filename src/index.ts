@@ -4,7 +4,7 @@ type Listener<S> = (newState: S) => void
 
 export interface ISubscription<S extends any> {
 	__updateState?: (nextState: any, forceUpdate?: boolean) => void
-	subscribe: (fn: Listener<S>) => void
+	subscribe: (fn: Listener<S>) => () => void
 	unsubscribe: (fn: Listener<S>) => void
 	listener: Set<Listener<S>>
 	state: S
@@ -23,10 +23,12 @@ export function createSubscription<S extends object>(
 ): ISubscription<S> {
 	let state: S = initialState || ({} as any)
 	let listener: Set<Listener<S>> = new Set()
+
+	const unsubscribe = (fn: Listener<S>) => listener.delete(fn)
 	const subscribe = (fn: Listener<S>) => {
 		listener.add(fn)
+		return () => unsubscribe(fn)
 	}
-	const unsubscribe = (fn: Listener<S>) => listener.delete(fn)
 	const updateState = (nextState: S, forceUpdate = true) => {
 		state = { ...state, ...nextState }
 		if (forceUpdate) {
@@ -169,7 +171,7 @@ export const useReactive = <S extends object>(
 ) => {
 	const [, setUpdate] = React.useState({})
 	const updater = React.useCallback(
-		(prop) => {
+		(prop: string) => {
 			if (!pick || (Array.isArray(pick) && pick.includes(prop))) {
 				setUpdate({})
 			}
@@ -182,4 +184,16 @@ export const useReactive = <S extends object>(
 		// eslint-disable-next-line react-hooks/exhaustive-deps
 	}, [])
 	return reactiveStore.store
+}
+
+export const useSyncStore = <S extends object>(
+	subscriber: ISubscription<S>,
+) => {
+	let state = React.useSyncExternalStore(subscriber.subscribe, () => {
+		return subscriber.state
+	})
+	return {
+		state,
+		subscriber,
+	}
 }

@@ -16,7 +16,23 @@
 npm install --save global-state-hook
 ```
 
-## Update:
+## Update 2023:
+#### With React 18 support useSyncExternalStore, you can now write your React App like that:
+
+```typescript jsx
+let CounterDisplay2 = () => {
+	let {state, subscriber} = useSyncStore(counterSubscription)
+	return (
+		<div>
+			Counter syncing with useSyncStore store: {state.count}
+
+			<button onClick={() => subscriber.updateState({count: 0})}>Reset</button>
+		</div>
+	)
+}
+```
+
+## Update 2022:
 
 #### With new Reactive pattern, you can now write your React App like that:
 

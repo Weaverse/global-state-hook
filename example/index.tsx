@@ -7,6 +7,7 @@ import {
 	useReactive,
 	useReducerSubscription,
 	useSubscription,
+	useSyncStore,
 } from "../src/index"
 import { render } from "react-dom"
 
@@ -29,6 +30,17 @@ function CounterDisplay() {
 		</div>
 	)
 }
+let CounterDisplay2 = () => {
+	let { state, subscriber } = useSyncStore(counterSubscription)
+	return (
+		<div>
+			Counter syncing with useSyncStore store: {state.count}
+			<button onClick={() => subscriber.updateState({ count: 0 })}>
+				Reset
+			</button>
+		</div>
+	)
+}
 function FooDisplay() {
 	// Only update when foo change
 	let { state, setState } = useSubscription(counterSubscription, ["foo"])
@@ -36,6 +48,7 @@ function FooDisplay() {
 	console.log("Only update when foo change", state)
 	return (
 		<div>
+			Only update when foo change
 			<button onClick={() => setState((x: any) => ({ foo: x.foo - 1 }))}>
 				-
 			</button>
@@ -64,15 +77,15 @@ function Text() {
 
 const TextContext = React.createContext<ISubscription<string>>(null)
 
-function TextComponent() {
-	const textSubscription = createSubscription("The text will sync together")
-	return (
-		<TextContext.Provider value={textSubscription}>
-			<Text />
-			<Text />
-		</TextContext.Provider>
-	)
-}
+// function TextComponent() {
+// 	const textSubscription = createSubscription("The text will sync together")
+// 	return (
+// 		<TextContext.Provider value={textSubscription}>
+// 			<Text />
+// 			<Text />
+// 		</TextContext.Provider>
+// 	)
+// }
 
 const fakeData = [
 	{
@@ -190,10 +203,34 @@ function App() {
 		<>
 			<Counter2 />
 			<Counter2 />
+			{/*a line break*/}
+			<div
+				style={{
+					marginTop: 20,
+					marginBottom: 20,
+					borderBottom: "1px solid #ccc",
+				}}
+			></div>
 			<CounterDisplay />
+			<CounterDisplay2 />
 			<FooDisplay />
-			<TextComponent />
+
+			<div
+				style={{
+					marginTop: 20,
+					marginBottom: 20,
+					borderBottom: "1px solid #ccc",
+				}}
+			></div>
 			<MountAndUnmount />
+
+			<div
+				style={{
+					marginTop: 20,
+					marginBottom: 20,
+					borderBottom: "1px solid #ccc",
+				}}
+			></div>
 			<ReactiveApp />
 		</>
 	)
